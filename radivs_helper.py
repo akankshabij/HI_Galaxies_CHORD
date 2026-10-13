@@ -62,8 +62,8 @@ def setup_SkyVectors(params):
 
     extent_RA = params['ra2'] - params['ra1']
     extent_Dec = params['dec2'] - params['dec1']
-    base_RA = extent_RA / 2
-    base_Dec = extent_Dec / 2
+    base_RA = params['ra1'] + (extent_RA / 2)
+    base_Dec = params['dec1'] + (extent_Dec / 2)
     npix_x =  int(extent_RA * pixels_per_degree)
     npix_y =  int(extent_Dec * pixels_per_degree)
     return extent_RA, extent_Dec, base_RA, base_Dec, npix_x, npix_y
@@ -74,7 +74,7 @@ def setup_radivs(params, brightness_threshold):
 
     radivs_params = [Nchans, channelMin, channelMax, extent_RA, extent_Dec, base_RA, base_Dec, npix_x, npix_y, brightness_threshold]
 
-    np.savez(params['output_directory']+'radivs_setup.npz', Nchans=Nchans, channelMin=channelMin, channelMax=channelMax, 
+    np.savez(params['output_directory']+'radivs_setup_1brightGauss_i10.npz', Nchans=Nchans, channelMin=channelMin, channelMax=channelMax, 
              brightness_threshold=brightness_threshold, extent_RA=extent_RA, extent_Dec=extent_Dec, 
              base_RA=base_RA, base_Dec=base_Dec, npix_x=npix_x, npix_y=npix_y)
 
@@ -159,6 +159,35 @@ def make_spectra(catalog, params, rank, comm):
         print()
     return S_Jy, SNR_spectra
 
+def selectSources(params):
+    lgMHI = params['lgMHI']
+    incl = params['incl']
+    z = params['z']
+    ra = params['ra']
+    dec = params ['dec']
+    RMS_Jy = 1
+
+    MHI = 10**lgMHI
+    VHI = VHI_polyFit(MHI)
+    W50 = estimate_W50(VHI, np.deg2rad(incl))
+    print("W50 is ", W50)
+
+    faxis = get_faxis(params)
+    print("faxis is ", faxis)
+
+    spectra = np.zeros((1,faxis.shape[0]))
+    SNR, _, Sf = Generate_Spectra(MHI=MHI, W50=W50, z=z, RMS_Jy=RMS_Jy, faxis=faxis)
+    spectra[0] = Sf * params['flux_units']
+    print("SNR is ", SNR)
+
+    spectra_peaks = np.max(spectra)
+    brightness_threshold = np.min(spectra_peaks)*1e-3
+    setup_radivs(params, brightness_threshold)
+
+    sourcesVec = np.zeros((1,3))
+    sourcesVec[0] = setup_sourceVectors(params, ra=ra, dec=dec)
+    np.save(params['output_directory']+'spectra_1brightGauss_i10.npy', spectra)
+    np.save(params['output_directory']+'sourceVectors_1brightGauss_i10.npy', sourcesVec)
 
 
 

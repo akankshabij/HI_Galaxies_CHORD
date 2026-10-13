@@ -193,6 +193,48 @@ def HIPASS_data():
     error = tops - bottoms
     return data[4:-1,:], error[4:-1]
 
+def FASHI_DR2():
+    data = np.array([
+        [5.2,  6.249e-1, 5.456e-1, 8.171e-1],
+        [5.5,  4.304e-1, 3.045e-1, 7.172e-1],
+        [5.7,  7.230e-1, 3.920e-1, 5.426e-1],
+        [5.9,  2.650e-1, 1.425e-1, 3.021e-1],
+        [6.1,  1.511e-1, 0.711e-1, 2.479e-1],
+        [6.3,  3.614e-1, 0.928e-1, 1.480e-1],
+        [6.5,  2.715e-1, 0.644e-1, 0.874e-1],
+        [6.7,  2.118e-1, 0.350e-1, 0.606e-1],
+        [6.9,  1.479e-1, 0.213e-1, 0.409e-1],
+        [7.1,  1.549e-1, 0.159e-1, 0.320e-1],
+        [7.3,  1.151e-1, 0.104e-1, 0.247e-1],
+        [7.5,  8.992e-2, 0.724e-2, 1.881e-2],
+        [7.7,  6.645e-2, 0.420e-2, 1.169e-2],
+        [7.9,  5.805e-2, 0.359e-2, 0.836e-2],
+        [8.1,  4.226e-2, 0.171e-2, 0.703e-2],
+        [8.3,  3.880e-2, 0.123e-2, 0.568e-2],
+        [8.5, 3.249e-2, 0.084e-2, 0.324e-2],
+        [8.7, 3.033e-2, 0.075e-2, 0.212e-2],
+        [8.9, 2.688e-2, 0.045e-2, 0.160e-2],
+        [9.1, 2.324e-2, 0.032e-2, 0.129e-2],
+        [9.3, 1.855e-2, 0.022e-2, 0.095e-2],
+        [9.5, 1.339e-2, 0.015e-2, 0.075e-2],
+        [9.7, 8.957e-3, 0.098e-3, 0.604e-3],
+        [9.9, 4.994e-3, 0.056e-3, 0.453e-3],
+        [10.1, 2.190e-3, 0.029e-3, 0.256e-3],
+        [10.3, 7.037e-4, 0.114e-4, 1.083e-4],
+        [10.5, 1.560e-4, 0.032e-4, 0.316e-4],
+        [10.7, 2.168e-5, 0.133e-5, 0.557e-5],
+        [10.9, 2.982e-6, 0.440e-6, 0.839e-6],
+    ])
+
+    log_MH   = data[:, 0]
+    phi      = data[:, 1]
+    stat_err = data[:, 2]
+    sys_err  = data[:, 3]
+    total_err = np.sqrt(stat_err**2 + sys_err**2)
+
+    return log_MH, phi, total_err
+
+
 def HIMF_Counts(catalogs, labels, ALF, RMS, showSurveys=True, 
                 minCount=10, mockAlf=[False,False,False], solidang=[None, None, None]):
     
@@ -259,6 +301,159 @@ def HIMF_Counts(catalogs, labels, ALF, RMS, showSurveys=True,
     plt.savefig('Plots/WoutRFI_Highz_z0p8_HIMF_Counts.png')
     #plt.show()
 
+def HIMF_Counts_err_toppanel(err_cat, labels, ALF, RMS, showSurveys=True, 
+                minCount=10, mockAlf=[False,False,False], solidang=[None, None, None]):
+    
+    mpl.rcParams.update({
+        'font.size': 14,         
+        'axes.labelsize': 14,     
+        'axes.titlesize': 14,
+        'xtick.labelsize': 14,
+        'ytick.labelsize': 14,
+    })
+
+    fig, axs = plt.subplots(1, 1, figsize=(3.5, 4), dpi=300, sharex=True)#, gridspec_kw={'height_ratios': [1, 1, 0.4]})
+    plt.subplots_adjust(hspace=0)
+
+    bins = np.arange(4.9, 12.2, 0.2)
+    mid_bins = 0.5*(bins[1:] + bins[:-1])
+    #mid_bins = bins[:-1]
+    print(mid_bins.shape)
+    color = cm.get_cmap('Dark2', 7).colors
+    #color = cm.rainbow(np.linspace(0, 1, len(catalogs)+5))
+    markers = ['v', 's', 'o']
+    hatches = ['', '', '']
+
+    HI_surveys = Table3_Ma2024()
+    lg_MHI = HI_surveys[:,0]
+    HIPASS = HI_surveys[:,1]
+    HIPASS_err = HI_surveys[:,2]
+    #ALFALFA = HI_surveys[:,3]
+    #ALFALFA_err = HI_surveys[:,4]
+    FASHI_N = HI_surveys[:,5]
+    FASHI_N_err = HI_surveys[:,6] 
+    FASHI_S = HI_surveys[:,7]
+    FASHI_S_err = HI_surveys[:,8]
+    Total = HI_surveys[:,9]
+    Total_err = HI_surveys[:,10]
+    FASH_MHI, FASHI_2, FASH_err = FASHI_DR2()
+
+    ALF_data = ALFALFA_data()
+    ALF_x = ALF_data[:,0]
+    ALFALFA = ALF_data[:,1]
+    ALFALFA_err = ALF_data[:,2]
+    ALF_count = ALF_data[:,3]
+    # remove datapoints which have less than 10 sources in the mass bin
+    ALF_x = ALF_x[ALF_count > minCount]
+    ALFALFA = ALFALFA[ALF_count > minCount]
+    ALFALFA_err = ALFALFA_err[ALF_count > minCount]
+
+    # HIPASS_dat, HIPASS_error = HIPASS_data()
+    # HIP_x = HIPASS_dat[:,0]
+    # HIPASS = HIPASS_dat[:,1]
+    # HIPASS_err = HIPASS_error
+    # print("error shape", HIPASS_err.shape)
+
+    for i in range(len(err_cat)):
+        if i < 2:
+            phi_counts = np.load(err_cat[i])
+            mask = phi_counts[0]!=0
+            phi = phi_counts[0]
+            Counts = phi_counts[1]
+            Counts_mean = np.mean(Counts, axis=0)
+            Counts_std = np.std(Counts, axis=0)
+            total_Counts = np.sum(Counts_mean)
+
+            phi_med = np.nanpercentile(phi, 50, axis=0)
+            phi_lo  = np.nanpercentile(phi, 16, axis=0)
+            phi_hi  = np.nanpercentile(phi, 84, axis=0)
+            phi_med[Counts_mean<minCount] = np.nan
+
+            if i==0:
+                solidang = (gf.solid_angle(dec1=20, dec2=80, ra1=0, ra2=360)*u.sr).to_value(u.deg**2)//1000*1000
+            elif i==1:
+                solidang = (gf.solid_angle(dec1=20, dec2=50, ra1=0, ra2=360)*u.sr).to_value(u.deg**2)//100*100
+
+            axs.scatter(mid_bins, phi_med, color=color[i], label=labels[i] + ' CHORD', s=7, marker=markers[i])
+            if i==0:
+                axs.fill_between(mid_bins[1:], phi_lo[1:], phi_hi[1:], alpha=0.3, color='gray')
+            # axs[0].errorbar(mid_bins, phi_mean, yerr=phi_std,
+            #                 fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[0], label='5 year survey')
+            mantissa, exponent = f"{total_Counts:.0e}".split("e")
+            exponent = int(exponent)
+            #axs[1].step(mid_bins, Counts_mean, color=color[i], label=labels[i]+f', {solidang:.0f} deg$^{{2}}$ \n\t Total: {mantissa}${{\\times}}$10$^{exponent}$', where='post')
+            #axs[1].fill_between(mid_bins, Counts_mean-Counts_std, Counts_mean+Counts_std, alpha=0.3, color=color[i], step='post')
+
+            # relative_uncertainty = Counts_std / Counts_mean
+            # relative_uncertainty[Counts_mean < 10] = np.nan # mask
+            # poisson = np.sqrt(Counts_mean) / Counts_mean
+            # #mask = (Counts_mean < 10) | (Counts_mean > 100)
+            # poisson[Counts_mean < 10] = np.nan
+            # axs[2].scatter(mid_bins, relative_uncertainty, color=color[i], s=5)
+            # axs[2].bar(mid_bins, poisson, color=color[i], linestyle='--', alpha=0.4)
+            # if i==0:
+            #     axs[2].scatter(9,0,s=5, color='black', label='$\sigma/<N>$')
+            #     axs[2].bar(9,0, color='black', label='Poisson', alpha=0.4)
+            # axs[2].set_ylim(0,1.5)
+
+        #else:
+            #plot.recover_HIMF(catalog_fl=err_cat[i], ax=axs[0], label=labels[i], count_min=minCount, mockAlf=False,
+            #                            color=color[i], ALF=True, RMS=None, bins=bins, marker=markers[i], fromD=False)
+            #alf_counts = plot.MHI_Counts(catalog_fl=err_cat[i], ax=axs[1], label='', color=color[i], bins=bins)
+            #mantissa, exponent = f"{alf_counts:.0e}".split("e")
+            #exponent = int(exponent)
+            #axs[1].plot(5,0,color=color[i], label=f'ALFALFA, 7000 deg$^{{2}}$ \n\t Total: {mantissa}${{\\times}}$10$^{exponent}$')
+
+    #axs[1].set_yscale('log')
+    axs.set_yscale('log')
+
+    if showSurveys:
+        axs.errorbar(ALF_x, ALFALFA, yerr=ALFALFA_err,
+                    fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[2], label='ALFALFA')
+        axs.errorbar(lg_MHI, HIPASS, yerr=HIPASS_err,
+                fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[3], label='HIPASS')
+        #axs[0].errorbar(HIP_x, HIPASS, yerr=HIPASS_err,
+        #       fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[3], label='HIPASS')
+        #print(HIPASS_err)
+        axs.errorbar(lg_MHI, FASHI_N, yerr=FASHI_N_err,
+                fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[4], label='FASHI N')
+        axs.errorbar(lg_MHI, FASHI_S, yerr=FASHI_S_err,
+                fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[5], label='FASHI S')
+        # axs[0].errorbar(FASH_MHI, FASHI_2, yerr=FASH_err,
+        #         fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[5], label='FASHI DR2')
+    #axs[0].set_yscale('log')
+    
+    JonesHIMF = gf.HIMF_Jones2018(MHI=gf.MHI_grid)
+    MaHIMF = gf.HIMF_Ma2024(MHI=gf.MHI_grid)
+
+    axs.plot(np.log10(gf.MHI_grid), JonesHIMF, label='Jones+2018', color='gray', linewidth=1, linestyle='--') # HIMF
+    axs.plot(np.log10(gf.MHI_grid), MaHIMF, label='Ma+2025', color='purple', linewidth=1, linestyle=':') # HIMF
+    
+    axs.set_ylabel('$\phi(M_{HI})h_{70}^{-3}$[Mpc$^{-3}$ dex$^{-1}$]')
+    #axs[1].set_ylabel('Counts')
+    axs.set_xlabel('log($M_{HI}h^{2}_{70}/M_{\odot}$)')
+    axs.set_xlim(4.8,11.6)
+    axs.set_ylim(10**-8.5, 2)
+    axs.set_xticks([5,6,7,8,9,10,11])
+    axs.grid(True, linewidth=0.3)
+    #axs[1].grid(True, linewidth=0.3)
+    # axs[2].grid(True, linewidth=0.3)
+    #axs[2].set_ylabel('Relative uncertainty')
+
+    handles, labels = axs.get_legend_handles_labels()
+    by_label = dict(zip(labels, handles))
+    axs.legend(by_label.values(), by_label.keys(), loc='lower left', fontsize=9)
+    #axs[1].legend(loc='upper left', fontsize=8.7)
+    #axs[1].set_ylim(0.5,10**6.8)
+    #axs[1].set_yticks([1,10,100,10**3,10**4,10**5,10**6])
+    # axs[2].legend(fontsize=8.7, bbox_to_anchor=[0.62,1], loc='upper center')
+    # axs[2].set_ylabel('Relative \n Uncertainty')
+    #axs[0].tick_params(labelbottom=False) 
+    #axs[0].set_title('D < 40 Mpc')
+    #plt.tight_layout()
+    plt.savefig('Plots/PhiCounts_error_z1_toppanel.pdf', bbox_inches='tight')
+    #plt.show()
+
 def HIMF_Counts_err(err_cat, labels, ALF, RMS, showSurveys=True, 
                 minCount=10, mockAlf=[False,False,False], solidang=[None, None, None]):
     
@@ -294,6 +489,7 @@ def HIMF_Counts_err(err_cat, labels, ALF, RMS, showSurveys=True,
     FASHI_S_err = HI_surveys[:,8]
     Total = HI_surveys[:,9]
     Total_err = HI_surveys[:,10]
+    FASH_MHI, FASHI_2, FASH_err = FASHI_DR2()
 
     ALF_data = ALFALFA_data()
     ALF_x = ALF_data[:,0]
@@ -376,6 +572,8 @@ def HIMF_Counts_err(err_cat, labels, ALF, RMS, showSurveys=True,
                 fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[4], label='FASHI N')
         axs[0].errorbar(lg_MHI, FASHI_S, yerr=FASHI_S_err,
                 fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[5], label='FASHI S')
+        # axs[0].errorbar(FASH_MHI, FASHI_2, yerr=FASH_err,
+        #         fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[5], label='FASHI DR2')
     #axs[0].set_yscale('log')
     
     JonesHIMF = gf.HIMF_Jones2018(MHI=gf.MHI_grid)
@@ -388,7 +586,7 @@ def HIMF_Counts_err(err_cat, labels, ALF, RMS, showSurveys=True,
     axs[1].set_ylabel('Counts')
     axs[1].set_xlabel('log($M_{HI}h^{2}_{70}/M_{\odot}$)')
     axs[0].set_xlim(4.8,11.6)
-    axs[0].set_ylim(10**-8.5, 1)
+    axs[0].set_ylim(10**-8.5, 2)
     axs[0].set_xticks([5,6,7,8,9,10,11])
     axs[0].grid(True, linewidth=0.3)
     axs[1].grid(True, linewidth=0.3)
@@ -618,17 +816,15 @@ def z_Counts_err(err_cats, labels, mask=True, log=True, zmax=1):
         err_cat = err_cats[i]
         if i < 2:
             z_counts = np.load(err_cat)
-            print(z_bins.shape)
-            print(z_counts.shape)
             Counts_mean = np.mean(z_counts, axis=0)
             Counts_std = np.std(z_counts, axis=0)
             #Counts_mean = np.mean(z_counts[:,mask], axis=0)[0]
             #Counts_std = np.std(z_counts[:,mask], axis=0)[0]
 
-            axs.step(mid_bins, Counts_mean, where='post', label=labels[i], color=color[i])
+            axs.step(mid_bins, Counts_mean, where='post', label=labels[i], color=color[i], linewidth=1.5)
             axs.fill_between(mid_bins, Counts_mean-Counts_std, Counts_mean+Counts_std, alpha=0.3, color=color[i], step='post')
         else:
-            plot.dndz_catalog(err_cats[i], ax=axs, label='', color=color[i], Usedz=False, bins=50)
+            plot.dndz_catalog(err_cats[i], ax=axs, label='', color=color[i], Usedz=False, bins=mid_bins)
             axs.plot(0, 0, color=color[i], label='ALFALFA')
     axs.grid(True, linewidth=0.3)
     axs.set_ylabel('Counts')
@@ -746,20 +942,20 @@ def Show_Catalogs(catalogs):
 
 if __name__ == "__main__":
     #Counts_err(err_cat='phi_counts_checkpoint_5yr_z1_1000.npy')
-    z_Counts_err(err_cats=['Convert_z_counts_checkpoint_wspectra_5yr_z1_1000.npy',
-                          'Convert_z_counts_checkpoint_wspectra_1yr_z1_1000.npy',
-                          'catalogs_output/ALFALFA_a100_90complete.npy'],
-                          labels=['5 year CHORD', '1 year CHORD', 'ALFALFA'])
+    # z_Counts_err(err_cats=['../Convert_z_counts_checkpoint_wspectra_5yr_z1_1000.npy',
+    #                       '../Convert_z_counts_checkpoint_wspectra_1yr_z1_1000.npy',
+    #                       '../catalogs_output/ALFALFA_a100_90complete.npy'],
+    #                       labels=['5 year CHORD', '1 year CHORD', 'ALFALFA'])
     # Counts_err(err_cat='phi_counts_checkpoint_5yr_z1_1000.npy')
     # z_Counts_err(err_cats=['z_counts_checkpoint_5yr_z1_1000.npy',
     #                       'z_counts_checkpoint_1yr_z1_1000.npy',
     #                       'catalogs_output/ALFALFA_a100_90complete.npy'],
     #                       labels=['5 year CHORD', '1 year CHORD', 'ALFALFA'])
     #HIMF_PrevSurveys(alf_cat='catalogs_output/ALFALFA_a100_90complete.npy')
-    # HIMF_Counts_err(err_cat=['Convert_phi_counts_checkpoint_wspectra_5yr_z1_1000.npy',    
-    #                          'Convert_phi_counts_checkpoint_wspectra_1yr_z1_1000.npy',
-    #                          'catalogs_output/ALFALFA_a100_90complete.npy'], 
-    #                  labels=['5 year', '1 year', 'ALFALFA'], ALF=None, RMS=None, showSurveys=True, minCount=10)
+    HIMF_Counts_err_toppanel(err_cat=['../Convert_phi_counts_checkpoint_wspectra_5yr_z1_1000.npy',    
+                             '../Convert_phi_counts_checkpoint_wspectra_1yr_z1_1000.npy',
+                             '../catalogs_output/ALFALFA_a100_90complete.npy'], 
+                     labels=['5 year', '1 year', 'ALFALFA'], ALF=None, RMS=None, showSurveys=True, minCount=10)
     #Counts_err(err_cat='phi_counts_z0p3to0p7_100.npy')
     #HIMF_Counts_err(err_cat='phi_counts_z0p3to0p7_100.npy', labels=None, ALF=None, RMS=None, showSurveys=False, minCount=10)
     #HIMF_Counts_err(err_cat='phi_counts_z0p1_100.npy', labels=None, ALF=None, RMS=None, showSurveys=True, minCount=10)

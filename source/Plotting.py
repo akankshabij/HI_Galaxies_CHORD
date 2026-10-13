@@ -157,9 +157,11 @@ def Dec_RA_counts(catalog, lgMHI_bin1, lgMHI_bin2, solidangs, dec_edges, ra_edge
     ra = catalog[4, mask]
     dec_counts, _ = np.histogram(dec, bins=dec_edges)
     ra_counts, _ = np.histogram(ra, bins=ra_edges)
-    relative_density = dec_counts / (solidangs*np.sum(dec_counts))
+    total_dec = np.sum(dec_counts)
+    total_ra = np.sum(ra_counts)
+    relative_density = dec_counts / (solidangs*total_dec)
     relative_racounts = ra_counts/np.sum(ra_counts)
-    return relative_density, relative_racounts, np.sum(dec_counts), np.sum(ra_counts)
+    return relative_density, relative_racounts, total_dec, total_ra
 
 
 def dec_solidang_byMHI(catalog_lss, catalog_volim, normalizeDec=True, PlotRA=False):
@@ -399,24 +401,26 @@ def dndz(catalog=None, N=None, z=None, flname='', compareHans=''):
 def dndz_catalog(catalog_fl, ax=None, label='', color='', Usedz=True, bins=500):
     catalog = np.load(catalog_fl)
     z = catalog[8]
-    dn, bins = np.histogram(z, bins=100)
-    mid_bins = 0.5*(bins[1:] + bins[:-1])
-    mask = mid_bins < 0.02
-    total = np.sum(dn[mask])
-    print("total is ", total)
-    dz = (bins[1:])-(bins[:-1])
-    dndz = dn/dz
+    if Usedz:
+        dn, bins = np.histogram(z, bins=100)
+        mid_bins = 0.5*(bins[1:] + bins[:-1])
+        mask = mid_bins < 0.02
+        total = np.sum(dn[mask])
+        print("total is ", total)
+        dz = (bins[1:])-(bins[:-1])
+        dndz = dn/dz
     if ax!=None:
         if Usedz:
-            ax.plot(gf.mid_bin(bins), dndz, label=label, color=color)
+            ax.plot(gf.mid_bin(bins), dndz, label=label, color=color, bins=bins)
         else:
-            ax.hist(z, bins=bins, color=color, histtype='step', label=label)
+            ax.hist(z, bins=bins, color=color, histtype='step', label=label, linewidth=1.5)
     else:
         plt.figure()
         if Usedz:
-            plt.plot(gf.mid_bin(bins), dndz)
+            plt.plot(gf.mid_bin(bins), dndz, bins=bins)
         else:
-            plt.plot(gf.mid_bin(bins), dn, label=label, color=color)
+            dn, bins = np.histogram(z, bins=100)
+            plt.plot(gf.mid_bin(bins), dn, label=label, color=color, bins=bins)
         #plt.xlim(0,0.7)
         plt.show()
 
@@ -837,7 +841,7 @@ def W50z_Plane_subplots_zD(RMS=0.1, sigma=6):
     ax[0].set_yticks([1.4,1.8,2.2,2.6])
     
     cbar = fig.colorbar(im, ax=ax, pad=0.01)
-    cbar.set_label(r"log($M_{\mathrm{HI}}/M_\odot$)")
+    cbar.set_label(r"5-year mass detection limit" + "\n" + r"log($M_{\mathrm{HI}}/M_\odot$)")
     cbar.set_ticks([4,6,8,10])
 
     legend_elements = [
@@ -1209,9 +1213,9 @@ def survey_scantime():
 #         plt.savefig(flname+'_'+extn[i]+'.png')
 
 if __name__ == "__main__":
-    redshift_surveysBar()
+    #redshift_surveysBar()
     #survey_scantime()
-    #W50z_Plane_subplots_zD()
+    W50z_Plane_subplots_zD()
     #W50z_Plane_oneplot()
     #check_Spectra()
     #W50z_Plane(nearby=True)
