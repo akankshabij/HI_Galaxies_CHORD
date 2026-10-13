@@ -1,12 +1,12 @@
 # setup radivs
 setup_radivs: True
 verbose: True
-path_to_radivs: '/home/akanksha/radivs'
-path_to_radivsexamples: '/home/akanksha/radivs_examples'
-pixel_resolution: 3      # in units pixels / synthesized beam. Recommned 3-5 pixels/beam
+path_to_radivs: './radivs'
+path_to_radivsexamples: './radivs_examples'
+pixel_resolution: 5      # in units pixels / synthesized beam. Recommned 3-5 pixels/beam
 
 # survey parameters
-zmax: 0.04               # maximum survey redshift 
+zmax: 0.1                # maximum survey redshift 
 zmin: 0                  # minimum survey redshift
 dec1: 42                 # starting declination (in degrees)
 dec2: 45                 # ending declination (in degrees)                
@@ -20,14 +20,14 @@ M_s: ~
 alpha: ~
 lgMHI_min: 5             # minimum MHI mass to drawn from HIMF
 lgMHI_max: 12            # maximum MHI mass to draw from HIMF
-FluxCut: 0               # Choose between 0-1. 
+FluxCut: 1               # Choose between 0-1. 
                          # If FluxCut=0 generate a volume limited catalog, else apply a flux cut with MHI > MHI_det*FluxCut
 
 # Spectra parameters
-fmin: 1350               # start of frequency array (in MHz)           
-fmax: 1422               # end of frequency array (in MHz)
+fmin: 1418               # start of frequency array (in MHz)           
+fmax: 1420               # end of frequency array (in MHz)
 fres: 195.3125           # frequency resolution (in kHz), the native resolution is 195.3125 kHz, 23.689 for 5 km/s upchannelized at z=0
-flux_units: 1000         # set to 1 for Jy, 1000 for mJy and 1000000 for uJy, etc.
+flux_units: 1000000      # set to 1 for Jy, 1000 for mJy and 1000000 for uJy, etc.
 
 # For comparison to theoretical RMS           
 obs_yr: 5                # observation time (in years)
@@ -35,10 +35,21 @@ sigma: 6                 # integrated signal to noise threshold
 delta_dec: 2.5           # declination separation between pointings in degrees
 switching_time: 7        # time it takes to repoint the dishes (in days) 
 
+# choose sources
+sourceselect: True
+nsources: 1
+sample: False
+lgMHI: 10
+incl: 10
+D: 2
+z: 0.001
+ra: 1.5
+dec: 43.5
+
 # Output settings
 output_directory: './Catalog/'           # path location to store all outputs
 save_catalog: True                       # save the full catalog (not including spectra)
-save_sourceVectors: True                 # for radvis code in shape (ntheta, nphi, 3) and np.float32 - follows the same indexing as catalog
+save_sourceVectors: True                 # for radvis code in shape (nsources, 3) and np.float32 - follows the same indexing as catalog
 save_spectra: True                       # shape (nsources, nchans) 
 diagnostic_Plots: True
 
