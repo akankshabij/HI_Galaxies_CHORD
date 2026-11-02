@@ -37,14 +37,14 @@ switching_time: 7        # time it takes to repoint the dishes (in days)
 
 # choose sources
 sourceselect: True
-nsources: 1
+nsources: 4
 sample: False
-lgMHI: 10
-incl: 10
-D: 2
-z: 0.001
-ra: 1.5
-dec: 43.5
+lgMHI: [10,9,8,7]
+incl: [10,2,80,50]
+D: [2,5,6,8]
+z: [0.001,0.001,0.001,0.001]
+ra: [1.5, 5, 3, 2]
+dec: [43.5, 42, 41, 44]
 
 # Output settings
 output_directory: './Catalog/'           # path location to store all outputs

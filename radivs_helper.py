@@ -160,32 +160,37 @@ def make_spectra(catalog, params, rank, comm):
     return S_Jy, SNR_spectra
 
 def selectSources(params):
-    lgMHI = params['lgMHI']
-    incl = params['incl']
-    z = params['z']
-    ra = params['ra']
-    dec = params ['dec']
-    RMS_Jy = 1
+    nsources = params['nsources']
+    lgMHI = np.asarray(params['lgMHI'])
+    incl = np.asarray(params['incl'])
+    z = np.asarray(params['z'])
+    ra = np.asarray(params['ra'])
+    dec = np.asarray(params ['dec'])
+    RMS_Jy = 1 # ignore for now
+    #print(lgMHI)
 
     MHI = 10**lgMHI
     VHI = VHI_polyFit(MHI)
     W50 = estimate_W50(VHI, np.deg2rad(incl))
-    print("W50 is ", W50)
+    #print("W50 is ", W50)
 
     faxis = get_faxis(params)
-    print("faxis is ", faxis)
+    #print("faxis is ", faxis)
 
-    spectra = np.zeros((1,faxis.shape[0]))
-    SNR, _, Sf = Generate_Spectra(MHI=MHI, W50=W50, z=z, RMS_Jy=RMS_Jy, faxis=faxis)
-    spectra[0] = Sf * params['flux_units']
-    print("SNR is ", SNR)
+    spectra = np.zeros((nsources,faxis.shape[0]))
+    sourcesVec = np.zeros((nsources,3))
+    
+    for i in np.arange(nsources):
+        sourcesVec[i] = setup_sourceVectors(params, ra=ra[i], dec=dec[i])
+        SNR, _, Sf = Generate_Spectra(MHI=MHI[i], W50=W50[i], z=z[i], RMS_Jy=RMS_Jy, faxis=faxis)
+    spectra[i] = Sf * params['flux_units']
+    #print("SNR is ", SNR)
 
     spectra_peaks = np.max(spectra)
     brightness_threshold = np.min(spectra_peaks)*1e-3
     setup_radivs(params, brightness_threshold)
-
-    sourcesVec = np.zeros((1,3))
-    sourcesVec[0] = setup_sourceVectors(params, ra=ra, dec=dec)
+    print("spectra shape ", spectra.shape)
+    print("sourcesVec shape", sourcesVec.shape)
     np.save(params['output_directory']+'spectra_1brightGauss_i10.npy', spectra)
     np.save(params['output_directory']+'sourceVectors_1brightGauss_i10.npy', sourcesVec)
 
