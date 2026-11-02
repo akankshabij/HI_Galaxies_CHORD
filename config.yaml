@@ -37,14 +37,14 @@ switching_time: 7        # time it takes to repoint the dishes (in days)
 
 # choose sources
 sourceselect: True
-nsources: 4
+nsources: 4                      # should match size for lgMHI, incl, D, z, ra, dec
 sample: False
-lgMHI: [10,9,8,7]
-incl: [10,2,80,50]
-D: [2,5,6,8]
-z: [0.001,0.001,0.001,0.001]
-ra: [1.5, 5, 3, 2]
-dec: [43.5, 42, 41, 44]
+lgMHI: [10,9,8,7]                # in log of solar masses 
+incl: [10,2,80,50]               # in unit degrees
+D: [2,5,6,8]                     # in Mpc
+z: [0.001,0.001,0.001,0.001]     # for nearby distances, just use a low z, exact number wont matter much
+ra: [1.5, 5, 3, 2]               # in degrees
+dec: [43.5, 42, 41, 44]          # in degrees
 
 # Output settings
 output_directory: './Catalog/'           # path location to store all outputs
