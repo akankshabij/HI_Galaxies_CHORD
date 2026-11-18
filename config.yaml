@@ -24,8 +24,8 @@ FluxCut: 1               # Choose between 0-1.
                          # If FluxCut=0 generate a volume limited catalog, else apply a flux cut with MHI > MHI_det*FluxCut
 
 # Spectra parameters
-fmin: 1418               # start of frequency array (in MHz)           
-fmax: 1420               # end of frequency array (in MHz)
+fmin: 1410               # start of frequency array (in MHz)           
+fmax: 1422               # end of frequency array (in MHz)
 fres: 195.3125           # frequency resolution (in kHz), the native resolution is 195.3125 kHz, 23.689 for 5 km/s upchannelized at z=0
 flux_units: 1000000      # set to 1 for Jy, 1000 for mJy and 1000000 for uJy, etc.
 
@@ -37,14 +37,13 @@ switching_time: 7        # time it takes to repoint the dishes (in days)
 
 # choose sources
 sourceselect: True
-nsources: 4                      # should match size for lgMHI, incl, D, z, ra, dec
+nsources: 1                    # should match size for lgMHI, incl, D, ra, dec
 sample: False
-lgMHI: [10,9,8,7]                # in log of solar masses 
-incl: [10,2,80,50]               # in unit degrees
-D: [2,5,6,8]                     # in Mpc
-z: [0.001,0.001,0.001,0.001]     # for nearby distances, just use a low z, exact number wont matter much
-ra: [1.5, 5, 3, 2]               # in degrees
-dec: [43.5, 42, 41, 44]          # in degrees
+lgMHI: [10]               # in log of solar masses 
+incl: [45]               # in unit degrees
+D: [20]                  # in Mpc
+ra: [1.5]                # in degrees
+dec: [43.5]              # in degrees
 
 # Output settings
 output_directory: './Catalog/'           # path location to store all outputs

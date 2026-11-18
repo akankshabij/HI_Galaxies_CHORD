@@ -116,6 +116,14 @@ def build_z_interp(zmin=0, zmax=5.0, zstep=1e-3, dtype=np.float32):
     D = cosmo.comoving_distance(z_grid.astype(np.float64)).to(u.Mpc).value.astype(dtype)
     return interp1d(D, z_grid, kind="linear", bounds_error=False, fill_value=(0.0, zmax))
 
+def build_z_interp_DL(zmin=0, zmax=5.0, zstep=1e-3, dtype=np.float32):
+    """Build fast interp to invert comoving_distance to get redshift z."""
+    if zmin==0:
+        zmin=zstep/2
+    z_grid = np.arange(zmin, zmax, zstep, dtype=dtype)
+    D_L = cosmo.luminosity_distance(z_grid.astype(np.float64)).to(u.Mpc).value.astype(dtype)
+    return interp1d(D_L, z_grid, kind="linear", bounds_error=False, fill_value=(0.0, zmax))
+
 def VolumeFromDist(D, solidang=4*np.pi, Dmin=0):
     return (1/3)*solidang*(D**3 - Dmin**3)
 

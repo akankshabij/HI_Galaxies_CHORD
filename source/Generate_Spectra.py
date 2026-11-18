@@ -47,10 +47,11 @@ def get_MHI(V, S, z):
     int_S = integrate_profile(V, S)
     return 2.356e5 * (D_L**2) * int_S / (1+z)
 
-def get_MHI_freq(f, S, z):
+def get_MHI_freq(f, S, z=None, D_L=None):
     ''' Helper function which converts the integrated HI profile in Hz (frequency axis) to HI Mass
     From Equation 45 of Meyer 2017'''
-    D_L = gf.Luminosity_Dist(z) # in Mpc
+    if D_L is None:
+        D_L = gf.Luminosity_Dist(z) # in Mpc
     int_S = integrate_profile(f, S) # in Hz*Jy
     return 49.7 * (D_L**2) * int_S  # in Hz*Jy
 

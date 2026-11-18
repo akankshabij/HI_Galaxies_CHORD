@@ -74,7 +74,7 @@ def setup_radivs(params, brightness_threshold):
 
     radivs_params = [Nchans, channelMin, channelMax, extent_RA, extent_Dec, base_RA, base_Dec, npix_x, npix_y, brightness_threshold]
 
-    np.savez(params['output_directory']+'radivs_setup_1brightGauss_i10.npz', Nchans=Nchans, channelMin=channelMin, channelMax=channelMax, 
+    np.savez(params['output_directory']+'radivs_setup.npz', Nchans=Nchans, channelMin=channelMin, channelMax=channelMax, 
              brightness_threshold=brightness_threshold, extent_RA=extent_RA, extent_Dec=extent_Dec, 
              base_RA=base_RA, base_Dec=base_Dec, npix_x=npix_x, npix_y=npix_y)
 
@@ -163,11 +163,12 @@ def selectSources(params):
     nsources = params['nsources']
     lgMHI = np.asarray(params['lgMHI'])
     incl = np.asarray(params['incl'])
-    z = np.asarray(params['z'])
     ra = np.asarray(params['ra'])
     dec = np.asarray(params ['dec'])
+    D_L = np.asarray(params ['D'])
     RMS_Jy = 1 # ignore for now
-    #print(lgMHI)
+    zinterp = build_z_interp_DL(zmin=0, zmax=1.0, zstep=1e-3)
+    z = zinterp(D_L)
 
     MHI = 10**lgMHI
     VHI = VHI_polyFit(MHI)
@@ -183,7 +184,7 @@ def selectSources(params):
     for i in np.arange(nsources):
         sourcesVec[i] = setup_sourceVectors(params, ra=ra[i], dec=dec[i])
         SNR, _, Sf = Generate_Spectra(MHI=MHI[i], W50=W50[i], z=z[i], RMS_Jy=RMS_Jy, faxis=faxis)
-    spectra[i] = Sf * params['flux_units']
+        spectra[i] = Sf * params['flux_units']
     #print("SNR is ", SNR)
 
     spectra_peaks = np.max(spectra)
@@ -191,8 +192,9 @@ def selectSources(params):
     setup_radivs(params, brightness_threshold)
     print("spectra shape ", spectra.shape)
     print("sourcesVec shape", sourcesVec.shape)
-    np.save(params['output_directory']+'spectra_1brightGauss_i10.npy', spectra)
-    np.save(params['output_directory']+'sourceVectors_1brightGauss_i10.npy', sourcesVec)
+    np.save(params['output_directory']+'spectra.npy', spectra)
+    np.save(params['output_directory']+'sourceVectors.npy', sourcesVec)
+    np.save(params['output_directory']+'freq_axis.npy', faxis)
 
 
 
