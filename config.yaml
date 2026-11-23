@@ -3,7 +3,7 @@ setup_radivs: True
 verbose: True
 path_to_radivs: './radivs'
 path_to_radivsexamples: './radivs_examples'
-pixel_resolution: 5      # in units pixels / synthesized beam. Recommned 3-5 pixels/beam
+pixel_resolution: 2      # in units pixels / synthesized beam. Recommned 3-5 pixels/beam
 
 # survey parameters
 zmax: 0.1                # maximum survey redshift 
@@ -24,8 +24,8 @@ FluxCut: 1               # Choose between 0-1.
                          # If FluxCut=0 generate a volume limited catalog, else apply a flux cut with MHI > MHI_det*FluxCut
 
 # Spectra parameters
-fmin: 1416               # start of frequency array (in MHz)           
-fmax: 1421               # end of frequency array (in MHz)
+fmin: 1417               # start of frequency array (in MHz)           
+fmax: 1420               # end of frequency array (in MHz)
 fres: 195.3125           # frequency resolution (in kHz), the native resolution is 195.3125 kHz, 23.689 for 5 km/s upchannelized at z=0
 flux_units: 1000000      # set to 1 for Jy, 1000 for mJy and 1000000 for uJy, etc.
 
@@ -40,7 +40,7 @@ sourceselect: True
 nsources: 1              # should match size for lgMHI, incl, D, ra, dec
 sample: False
 lgMHI: [7]               # in log of solar masses 
-incl: [45]               # in unit degrees
+incl: [20]               # in unit degrees
 D: [6]                   # in Mpc
 ra: [1.5]                # in degrees
 dec: [43.5]              # in degrees
