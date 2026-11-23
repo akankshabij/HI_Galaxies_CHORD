@@ -169,7 +169,7 @@ def selectSources(params):
     D_L = np.asarray(params ['D'])
     ndays = params ['ndays']
     ndishes = params['ndishes']
-    dec_pointing = (params['dec2'] - params['dec1'])/2
+    dec_pointing = (params['dec2'] + params['dec1'])/2
     nu=params['fres']
     
     zinterp = build_z_interp_DL(zmin=0, zmax=1.0, zstep=1e-3)

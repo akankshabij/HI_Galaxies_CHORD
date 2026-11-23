@@ -39,7 +39,7 @@ switching_time: 7        # time it takes to repoint the dishes (in days)
 sourceselect: True
 nsources: 1              # should match size for lgMHI, incl, D, ra, dec
 sample: False
-lgMHI: [8]               # in log of solar masses 
+lgMHI: [7]               # in log of solar masses 
 incl: [45]               # in unit degrees
 D: [6]                   # in Mpc
 ra: [1.5]                # in degrees
