@@ -35,6 +35,29 @@ def add_zmask(ax):
     )
     return legend_patch
 
+def MHI_W50_scatter():
+    ALF_HIMF = np.load('../catalogs_output/DetectionsALFALFA_20to80deg_Dmax200.npy')
+    #ALF_HIMF = np.load('../catalogs_output/DetectionsALFALFA_20to80deg_Dmax200_ALFboundaries.npy')
+    #MockALF_sim = np.load('../catalogs_output/DetectionsALFALFA_MockSim_20to80deg_Dmax200_ALFboundaries.npy')
+    MockALF_sim = np.load('../catalogs_output/MockAlf_D200_Dec20to80_VelocityBrooks.npy')
+    ALF_data = np.load('../catalogs_output/ALFALFA_a100_90complete.npy')
+
+    plt.figure()
+    W50_broadened = gauss.W50_broadened(ALF_HIMF[3])
+    plt.scatter(ALF_data[0], ALF_data[3], label='ALFALFA a.100', alpha=0.2)
+    plt.scatter(ALF_HIMF[0], W50_broadened, label='HIMF-drawn', alpha=0.2, color='orange')
+    plt.scatter(MockALF_sim[0], MockALF_sim[3], label='Brooks et al. 2013', alpha=0.2, color='green')
+    
+    
+    
+    plt.legend()
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.xlabel('MHI ($M_{\odot}$)')
+    plt.ylabel('W50 (km/s)')
+    plt.show()
+
+
 def redshift_surveysBar():
     fig, ax = plt.subplots(figsize=[6,4], dpi=300)
 
@@ -1213,9 +1236,10 @@ def survey_scantime():
 #         plt.savefig(flname+'_'+extn[i]+'.png')
 
 if __name__ == "__main__":
+    MHI_W50_scatter()
     #redshift_surveysBar()
     #survey_scantime()
-    W50z_Plane_subplots_zD()
+    #W50z_Plane_subplots_zD()
     #W50z_Plane_oneplot()
     #check_Spectra()
     #W50z_Plane(nearby=True)

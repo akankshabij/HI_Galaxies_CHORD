@@ -40,11 +40,17 @@ def MHI_to_Sint(MHI, z):
     Sint = MHI*(1+z) / (2.356e5 * (D_L**2))
     return Sint
 
-def get_MHI(V, S, z):
+def get_MHI(V, S, z=None, D_L=None):
     ''' Helper function which converts the integrated HI profile to HI Mass 
     From Equation 47 of Meyer 2017'''
-    D_L = gf.Luminosity_Dist(z) # in Mpc
+    if D_L is None:
+        D_L = gf.Luminosity_Dist(z) # in Mpc
+    if z is None:
+        zinterp = gf.build_z_interp_DL()
+        z = zinterp(D_L)
+        print("z is ", z)
     int_S = integrate_profile(V, S)
+    print("int_S is ", int_S)
     return 2.356e5 * (D_L**2) * int_S / (1+z)
 
 def get_MHI_freq(f, S, z=None, D_L=None):
@@ -375,7 +381,7 @@ def Generate_Spectra(MHI, W50, z, RMS_Jy, faxis=None, a=1, w=1, b1=None, b2=None
 
     B = Busy_general(x, a, b1, b2, xe, xp, c, w, n)
     f, Sf = assign_freqUnits_convert(x, B, W50, z=z, MHI_desired=MHI, check=False, faxis=faxis)
-    SNR_int = SNRint(f, Sf, z, W50, MHI, RMS_Jy, check=False)
+    SNR_int = SNRint(f, Sf, z, W50, MHI, RMS_Jy, check=True)
                                                    
     #end = time.time()
     #return f, Sf, Sf_broad, V, S, S_broad, f_v, Sf_broad_v, SNR_int

@@ -16,7 +16,7 @@ Aeff=eff*(np.pi*(D/2)**2) * u.m**2
 def RMS_fromDays(days, decl, nu, z=0, N=512, PB=True):
     omega = 360 / (23.9345 * 3600) * u.deg / u.s
     FWHM_PB = np.rad2deg(1.2*0.21*(1+z)/D) * u.deg
-    #print("FWHM PB is", FWHM_PB)
+    print("FWHM PB is", FWHM_PB)
     sigma = ((2*c.k_B*Tsys/Aeff)*np.sqrt(omega*np.cos(decl)/(N*(N-1)*nu*FWHM_PB*days))).to_value(u.mJy)
     return sigma
 

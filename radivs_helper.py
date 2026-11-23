@@ -6,6 +6,7 @@ from Galaxy_Functions import *
 from CHORD_Sensitivity import *
 from Gaussian_Estimate import *
 from Generate_Spectra import *
+import astropy.units as u
 import time
 
 def validate_config(params):
@@ -166,7 +167,11 @@ def selectSources(params):
     ra = np.asarray(params['ra'])
     dec = np.asarray(params ['dec'])
     D_L = np.asarray(params ['D'])
-    RMS_Jy = 1 # ignore for now
+    ndays = params ['ndays']
+    ndishes = params['ndishes']
+    dec_pointing = (params['dec2'] - params['dec1'])/2
+    nu=params['fres']
+    
     zinterp = build_z_interp_DL(zmin=0, zmax=1.0, zstep=1e-3)
     z = zinterp(D_L)
 
@@ -183,10 +188,12 @@ def selectSources(params):
     
     for i in np.arange(nsources):
         sourcesVec[i] = setup_sourceVectors(params, ra=ra[i], dec=dec[i])
+        RMS_Jy = RMS_fromDays(days=ndays, decl=np.deg2rad(dec_pointing), nu=nu*u.kHz, z=z[i], N=ndishes, PB=True) / 1e3
+        print("RMS is ", RMS_Jy * 1e3)
         SNR, _, Sf = Generate_Spectra(MHI=MHI[i], W50=W50[i], z=z[i], RMS_Jy=RMS_Jy, faxis=faxis)
+        print("SNR is ", SNR)
         spectra[i] = Sf * params['flux_units']
-    #print("SNR is ", SNR)
-
+    
     spectra_peaks = np.max(spectra)
     brightness_threshold = np.min(spectra_peaks)*1e-3
     setup_radivs(params, brightness_threshold)

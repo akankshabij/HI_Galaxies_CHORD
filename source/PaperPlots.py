@@ -312,7 +312,7 @@ def HIMF_Counts_err_toppanel(err_cat, labels, ALF, RMS, showSurveys=True,
         'ytick.labelsize': 14,
     })
 
-    fig, axs = plt.subplots(1, 1, figsize=(3.5, 4), dpi=300, sharex=True)#, gridspec_kw={'height_ratios': [1, 1, 0.4]})
+    fig, axs = plt.subplots(1, 1, figsize=(6, 4), dpi=300, sharex=True)#, gridspec_kw={'height_ratios': [1, 1, 0.4]})
     plt.subplots_adjust(hspace=0)
 
     bins = np.arange(4.9, 12.2, 0.2)
@@ -374,7 +374,7 @@ def HIMF_Counts_err_toppanel(err_cat, labels, ALF, RMS, showSurveys=True,
             elif i==1:
                 solidang = (gf.solid_angle(dec1=20, dec2=50, ra1=0, ra2=360)*u.sr).to_value(u.deg**2)//100*100
 
-            axs.scatter(mid_bins, phi_med, color=color[i], label=labels[i] + ' CHORD', s=7, marker=markers[i])
+            axs.scatter(mid_bins, phi_med, color=color[i], label=labels[i] + ' CHORD', s=12, marker=markers[i])
             if i==0:
                 axs.fill_between(mid_bins[1:], phi_lo[1:], phi_hi[1:], alpha=0.3, color='gray')
             # axs[0].errorbar(mid_bins, phi_mean, yerr=phi_std,
@@ -409,16 +409,16 @@ def HIMF_Counts_err_toppanel(err_cat, labels, ALF, RMS, showSurveys=True,
 
     if showSurveys:
         axs.errorbar(ALF_x, ALFALFA, yerr=ALFALFA_err,
-                    fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[2], label='ALFALFA')
+                    fmt='.', ecolor='gray', capsize=4, elinewidth=1, markeredgewidth=0.3, color=color[2], label='ALFALFA')
         axs.errorbar(lg_MHI, HIPASS, yerr=HIPASS_err,
-                fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[3], label='HIPASS')
+                fmt='.', ecolor='gray', capsize=4, elinewidth=1, markeredgewidth=0.3, color=color[3], label='HIPASS')
         #axs[0].errorbar(HIP_x, HIPASS, yerr=HIPASS_err,
         #       fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[3], label='HIPASS')
         #print(HIPASS_err)
         axs.errorbar(lg_MHI, FASHI_N, yerr=FASHI_N_err,
-                fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[4], label='FASHI N')
+                fmt='.', ecolor='gray', capsize=4, elinewidth=1, markeredgewidth=0.3, color=color[4], label='FASHI N')
         axs.errorbar(lg_MHI, FASHI_S, yerr=FASHI_S_err,
-                fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[5], label='FASHI S')
+                fmt='.', ecolor='gray', capsize=4, elinewidth=1, markeredgewidth=0.3, color=color[5], label='FASHI S')
         # axs[0].errorbar(FASH_MHI, FASHI_2, yerr=FASH_err,
         #         fmt='.', ecolor='gray', capsize=3, elinewidth=1, markeredgewidth=0.3, color=color[5], label='FASHI DR2')
     #axs[0].set_yscale('log')
